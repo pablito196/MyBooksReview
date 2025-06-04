@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "270693808546",
+    "project_id": "bookreviewapp-bcf28",
+    "storage_bucket": "bookreviewapp-bcf28.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270693808546:android:b552bf745a55a586e09afb",
+        "android_client_info": {
+          "package_name": "com.sistema.bookreview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSkkyNWVTGSs9CZfh2bVawIN0mD0rlUes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

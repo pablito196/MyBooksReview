@@ -173,7 +173,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Botón para limpiar todos los filtros (solo visible si hay filtros activos)
+          // Botón para limpiar todos los filtros
           if (activeFiltersCount > 0)
             IconButton(
               icon: const Icon(Icons.clear_all),

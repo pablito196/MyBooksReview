@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
         ),
         home: isAuthenticated ? const MainNavigation() : const LoginScreen(),
         routes: {
+          '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
           '/main': (context) => const MainNavigation(),
         },

@@ -87,6 +87,18 @@ class Book {
       shelf: json['shelf'] ?? 'none',
     );
   }
+
+  Map<String, dynamic> toMap() {
+  return {
+    'id': id,
+    'title': title,
+    'authors': authors,
+    'description': description,
+    'imageLinks': {
+      'thumbnail': imageLinks?.thumbnail ?? '',
+    },
+  };
+}
 }
 
 class IndustryIdentifier {

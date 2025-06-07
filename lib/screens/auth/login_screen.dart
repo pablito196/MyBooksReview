@@ -12,111 +12,108 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _auth = FirebaseAuth.instance;
-
+  bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _errorMessage;
+
+  void _togglePasswordVisibility() {
+    setState(() => _obscurePassword = !_obscurePassword);
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      await _auth.signInWithEmailAndPassword(
+      final auth = FirebaseAuth.instance;
+      await auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text,
+        password: _passwordController.text.trim(),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inicio de sesión exitoso')),
-      );
-
-      // Redirigir a la pantalla principal
-      Navigator.pushReplacementNamed(context, '/main');
-    } on FirebaseAuthException catch (e) {
-      String message = 'Ocurrió un error';
-
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'El correo no está registrado';
-          break;
-        case 'wrong-password':
-          message = 'Contraseña incorrecta';
-          break;
-        case 'invalid-email':
-          message = 'Correo electrónico inválido';
-          break;
-        default:
-          message = e.message ?? message;
+      // Navegación al home
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/main');
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _resetPassword() async {
-    final email = _emailController.text.trim();
-
-    if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ingresa un correo válido para recuperar tu contraseña')),
-      );
-      return;
-    }
-
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Correo de recuperación enviado')),
-      );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Error al enviar correo de recuperación')),
-      );
+      setState(() {
+        switch (e.code) {
+          case 'user-not-found':
+            _errorMessage = 'No se encontró un usuario con ese correo.';
+            break;
+          case 'wrong-password':
+            _errorMessage = 'Contraseña incorrecta.';
+            break;
+          default:
+            _errorMessage = 'Error al iniciar sesión: ${e.message}';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Ha ocurrido un error inesperado.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+            child: Form(
             key: _formKey,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
                   'Iniciar Sesión',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
+                // Email
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Correo electrónico',
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Campo requerido';
                     } else if (!value.contains('@')) {
-                      return 'Correo inválido';
+                      return 'Correo no válido';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Contraseña
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: _togglePasswordVisibility,
+                    ),
                   ),
-                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Campo requerido';
@@ -126,33 +123,38 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _resetPassword,
-                    child: const Text('¿Olvidaste tu contraseña?'),
-                  ),
-                ),
+
                 const SizedBox(height: 16),
+
+                // Mensaje de error
+                if (_errorMessage != null)
+                  Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+
+                const SizedBox(height: 24),
+
+                // Botón de login
                 _isLoading
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
                         onPressed: _login,
-                        child: const Text('Iniciar Sesión'),
+                        child: const Text('Iniciar sesión'),
                       ),
+
+                const SizedBox(height: 12),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/register');
                   },
-                  child: const Text('¿No tienes cuenta? Regístrate'),
+                  child: const Text('¿No tienes cuenta? Regístrate aquí'),
                 ),
               ],
             ),
           ),
-        ),
+        )
       ),
     );
   }
-  
 }

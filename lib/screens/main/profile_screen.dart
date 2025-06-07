@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: _signOut,
               icon: const Icon(Icons.logout),
               label: const Text('Cerrar Sesión'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
             ),
           ],
         ),

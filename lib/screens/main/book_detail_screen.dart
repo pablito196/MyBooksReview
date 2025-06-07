@@ -45,6 +45,39 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
+  Future<void> _addToMyLibrary() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes iniciar sesión para guardar libros.')),
+      );
+      return;
+    }
+
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('my_books')
+        .doc(widget.book.id);
+
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Este libro ya está en tu biblioteca.')),
+      );
+      return;
+    }
+
+    final bookData = widget.book.toMap();
+    bookData['savedAt'] = FieldValue.serverTimestamp(); 
+    await docRef.set(bookData);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Libro guardado en tu biblioteca personal.')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final book = widget.book;
@@ -80,11 +113,21 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     const SizedBox(height: 16),
                     Text(
                       book.description != null && book.description!.isNotEmpty
-                          ? book.description!.length > 200
-                              ? '${book.description!.substring(0, 200)}...'
+                          ? book.description!.length > 400
+                              ? '${book.description!.substring(0, 400)}...'
                               : book.description!
                           : 'No hay descripción disponible.',
                       style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // BOTÓN PARA GUARDAR EN MI BIBLIOTECA
+                    Center(
+                      child: ElevatedButton.icon(
+                        onPressed: _addToMyLibrary,
+                        icon: const Icon(Icons.bookmark_add),
+                        label: const Text('Agregar a mi biblioteca'),
+                      ),
                     ),
                     const SizedBox(height: 24),
 

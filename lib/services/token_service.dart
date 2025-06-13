@@ -5,7 +5,7 @@ class TokenService {
   static const _tokenKey = 'auth_token';
   static final _uuid = Uuid();
 
-  /// Recupera el token de SharedPreferences, o lo genera si no existe
+  
   static Future<String> getOrCreateToken() async {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString(_tokenKey);

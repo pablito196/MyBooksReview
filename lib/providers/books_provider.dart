@@ -21,7 +21,7 @@ class BooksProvider with ChangeNotifier {
   String? get selectedCategory => _selectedCategory;
   String? get selectedYear => _selectedYear;
   
-  // Getter para obtener todas las categorías únicas
+ 
   List<String> get categories {
     Set<String> categorySet = {};
     for (Book book in _allBooks) {
@@ -32,7 +32,7 @@ class BooksProvider with ChangeNotifier {
     return categorySet.toList()..sort();
   }
 
-  // Getter para obtener todos los años únicos
+  
   List<String> get years {
     Set<String> yearSet = {};
     for (Book book in _allBooks) {
@@ -57,12 +57,12 @@ class BooksProvider with ChangeNotifier {
 
     _applyFilters();
 
-    // Calcula cuántos libros mostrar según la página actual
+    
     final totalFiltered = _filteredBooks.length;
     final maxIndex = (_page * _pageSize).clamp(0, totalFiltered);
     _filteredBooks = _filteredBooks.sublist(0, maxIndex);
 
-    // Actualiza si hay más libros para mostrar
+    
     _hasMore = maxIndex < totalFiltered;
     _page++;
 
@@ -117,7 +117,7 @@ class BooksProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Método para cargar más libros (paginación)
+  // Método para cargar más libros
   Future<void> loadMore() async {
     if (!_hasMore || _isFetching) return;
     await getBooks();

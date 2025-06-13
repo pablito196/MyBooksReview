@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/book.dart';
 import '../../models/review.dart';
-import '../../services/review_service.dart'; // servicio que define addReview y getReviews
-
+import '../../services/review_service.dart'; 
 class BookDetailScreen extends StatefulWidget {
   final Book book;
 
@@ -113,8 +112,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     const SizedBox(height: 16),
                     Text(
                       book.description != null && book.description!.isNotEmpty
-                          ? book.description!.length > 400
-                              ? '${book.description!.substring(0, 400)}...'
+                          ? book.description!.length > 1000
+                              ? '${book.description!.substring(0, 1000)}...'
                               : book.description!
                           : 'No hay descripción disponible.',
                       style: Theme.of(context).textTheme.bodyMedium,

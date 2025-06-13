@@ -15,10 +15,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _auth = FirebaseAuth.instance;
   bool _obscurePassword = true;
 
-
   void _togglePasswordVisibility() {
     setState(() => _obscurePassword = !_obscurePassword);
   }
+
   void _register() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
@@ -61,16 +61,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Registro',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              // Hero para el ícono
+              Hero(
+                tag: 'book-icon',
+                child: Icon(Icons.menu_book_rounded, size: 80, color: Theme.of(context).primaryColor),
               ),
+              const SizedBox(height: 16),
+
+              // Hero para el título
+              Hero(
+                tag: 'title-text',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Text(
+                    'Registro',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 32),
               TextFormField(
                 controller: _emailController,
@@ -93,14 +111,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: _togglePasswordVisibility,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Campo requerido';
-                  } else if (value.length < 6) {
-                    return 'Debe tener al menos 6 caracteres';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -108,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'Confirmar Contraseña',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -116,14 +126,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: _togglePasswordVisibility,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Campo requerido';
-                  } else if (value.length < 6) {
-                    return 'Debe tener al menos 6 caracteres';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 24),
               ElevatedButton(

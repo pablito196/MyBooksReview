@@ -35,7 +35,6 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
 
-      // Navegación al home
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/main');
       }
@@ -52,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             _errorMessage = 'Error al iniciar sesión: ${e.message}';
         }
       });
-    } catch (e) {
+    } catch (_) {
       setState(() {
         _errorMessage = 'Ha ocurrido un error inesperado.';
       });
@@ -68,26 +67,30 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-            child: Form(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Iniciar Sesión',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                const Icon(Icons.menu_book_rounded, size: 80, color: Color(0xFF2E7D32)),
+                const SizedBox(height: 16),
+                Text(
+                  'Bienvenido a Book Review',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
+
                 // Email
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Correo electrónico',
-                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -106,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -123,10 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 16),
 
-                // Mensaje de error
+                // Error
                 if (_errorMessage != null)
                   Text(
                     _errorMessage!,
@@ -135,13 +137,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                // Botón de login
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: _login,
-                        child: const Text('Iniciar sesión'),
-                      ),
+                // Botón login
+                SizedBox(
+                  width: double.infinity,
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: _login,
+                          child: const Text('Iniciar sesión'),
+                        ),
+                ),
 
                 const SizedBox(height: 12),
                 TextButton(
@@ -153,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        )
+        ),
       ),
     );
   }
